@@ -641,39 +641,39 @@ m_specs.symbol = m_currentSymbol;
 // CORRETO - SymbolInfoInteger com retorno direto
 m_specs.digits = SymbolInfoInteger(m_currentSymbol, SYMBOL_DIGITS);
 // CORRETO - SymbolInfoDouble com retorno direto
-m_specs.contractSize = SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_CONTRACT_SIZE);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_CONTRACT_SIZE, m_specs.contractSize);
 // CORRETO - SymbolInfoString
 m_specs.marginCurrency = SymbolInfoString(m_currentSymbol, SYMBOL_CURRENCY_MARGIN);
 m_specs.profitCurrency = SymbolInfoString(m_currentSymbol, SYMBOL_CURRENCY_PROFIT);
 // Cálculo mode
 long calcMode = SymbolInfoInteger(m_currentSymbol, SYMBOL_TRADE_CALC_MODE);
-m_specs.calculationType = (string)calcMode;
+m_specs.calculationType = (string)(long)calcMode;
 // Volumes
-m_specs.minVolume = SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_MIN);
-m_specs.maxVolume = SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_MAX);
-m_specs.volumeStep = SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_STEP);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_MIN, m_specs.minVolume);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_MAX, m_specs.maxVolume);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_VOLUME_STEP, m_specs.volumeStep);
 
 // Swaps
-m_specs.buySwap = SymbolInfoDouble(m_currentSymbol, SYMBOL_SWAP_LONG);
-m_specs.sellSwap = SymbolInfoDouble(m_currentSymbol, SYMBOL_SWAP_SHORT);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_SWAP_LONG, m_specs.buySwap);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_SWAP_SHORT, m_specs.sellSwap);
 
 // Stop level
 m_specs.stopLevel = SymbolInfoInteger(m_currentSymbol, SYMBOL_TRADE_STOPS_LEVEL);
 // Margens
-m_specs.marginHedge = SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_HEDGED);
-m_specs.marginInitial = SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_INITIAL);
-m_specs.marginMaintenance = SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_MAINTENANCE);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_HEDGED, m_specs.marginHedge);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_INITIAL, m_specs.marginInitial);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_MARGIN_MAINTENANCE, m_specs.marginMaintenance);
 
 // Preços e ticks
-m_specs.tickSize = SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_TICK_SIZE);
-m_specs.tickValue = SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_TICK_VALUE);
-m_specs.point = SymbolInfoDouble(m_currentSymbol, SYMBOL_POINT);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_TICK_SIZE, m_specs.tickSize);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_TRADE_TICK_VALUE, m_specs.tickValue);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_POINT, m_specs.point);
 
 // Spread
 long spread_value = SymbolInfoInteger(m_currentSymbol, SYMBOL_SPREAD);
 m_specs.spread = (double)spread_value * m_specs.point;
 
-m_specs.spreadFloat = SymbolInfoDouble(m_currentSymbol, SYMBOL_SPREAD_FLOAT);
+SymbolInfoDouble(m_currentSymbol, SYMBOL_SPREAD_FLOAT, m_specs.spreadFloat);
 
 // Execução
 long execution_mode = SymbolInfoInteger(m_currentSymbol, SYMBOL_TRADE_EXEMODE);
@@ -781,11 +781,11 @@ return sessions >= 5;
 // Função auxiliar para verificar se há sessão de negociação - CORRIGIDO
 bool HasTradingSession(ENUM_DAY_OF_WEEK day)
 {
-datetime sessions_start[], sessions_end[];
+datetime session_start, session_end;
 // CORRIGIDO: Adicionado o parâmetro 'index' (uint) faltante
-if(SymbolInfoSessionTrade(m_currentSymbol, day, 0, sessions_start, sessions_end))
+if(SymbolInfoSessionTrade(m_currentSymbol, day, 0, session_start, session_end))
 {
-return ArraySize(sessions_start) > 0;
+return session_start != 0;
 }
 return false;
 }
@@ -995,15 +995,15 @@ void UpdateSymbolCache()
 static datetime last_update = 0;
 if(TimeCurrent() - last_update > 1)
 {
-symCache.point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
-symCache.tick_value = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-symCache.tick_size = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
+SymbolInfoDouble(_Symbol, SYMBOL_POINT, symCache.point);
+SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE, symCache.tick_value);
+SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE, symCache.tick_size);
 symCache.stops_level = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
-symCache.min_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-symCache.max_volume = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
-symCache.volume_step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-symCache.ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-symCache.bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN, symCache.min_volume);
+SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX, symCache.max_volume);
+SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP, symCache.volume_step);
+SymbolInfoDouble(_Symbol, SYMBOL_ASK, symCache.ask);
+SymbolInfoDouble(_Symbol, SYMBOL_BID, symCache.bid);
 
 long spread_value = SymbolInfoInteger(_Symbol, SYMBOL_SPREAD);
 symCache.spread = (double)spread_value * symCache.point;
@@ -1445,7 +1445,6 @@ int last_trade_bar = 0;
 datetime last_bar_time = 0;
 long G_MagicNumber;
 long G_PartialCloseTickets[];
-double G_InitialStopLoss[];
 double G_InitialStopLoss[];
 long G_InitialStopLoss_Tickets[];
 int htf_ichimoku_handle = INVALID_HANDLE;
